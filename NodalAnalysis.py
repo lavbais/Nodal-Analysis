@@ -2,133 +2,66 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+%matplotlib inline
 
-# ============================================================
-# NODAL ANALYSIS
-# ============================================================
-# This project evaluates well performance using:
-# 1. Inflow Performance Relationship (IPR)
-# 2. Tubing Performance Relationship (TPR)
-# 3. Comparison of different tubing sizes
-# ============================================================
+# IPR Dataset (Source: Petrowiki)
+# The following data represents the relationship between
+# flowing bottom-hole pressure and production rate.
 
+Q_IPR= [0,1999,3094,3902,4512,4963,5275,5458,5519]
+Pwf_IPR= [4000,3500,3000,2500,2000,1500,1000,500,14.7]
 
-# ------------------------------------------------------------
-# 1. IPR DATASET
-# ------------------------------------------------------------
-# Source: PetroWiki
+# The IPR data is arranged in a DataFrame for analysis.
+DF_IPR= pd.DataFrame({'Pwf':Pwf_IPR, 'q':Q_IPR})
 
-Q_IPR = [0, 1999, 3094, 3902, 4512, 4963, 5275, 5458, 5519]
+DF_IPR
 
-Pwf_IPR = [4000, 3500, 3000, 2500, 2000, 1500, 1000, 500, 14.7]
+# Preparing the production rate and flowing pressure data
+# for plotting the IPR curve.
 
-DF_IPR = pd.DataFrame({
-    'Pwf (psi)': Pwf_IPR,
-    'Flow Rate (bbl/d)': Q_IPR
-})
+x_IPR= Q_IPR
+y_IPR= Pwf_IPR
 
-print("\nIPR Dataset:")
-print(DF_IPR)
+# Plotting the IPR curve to visualize well inflow performance.
 
+plt.plot(x_IPR,y_IPR)
+plt.xlabel('Q_IPR(bbl/d)')
+plt.ylabel('Pwf_IPR(psi)')
+plt.title('IPR Curve')
+plt.figure(figsize=(10,6))
+plt.style.use('classic')
 
-# ------------------------------------------------------------
-# 2. IPR CURVE
-# ------------------------------------------------------------
+# TPR Dataset (Source: Petrowiki)
+# TPR data is considered for three different tubing sizes:
+# 1.90 inch, 2.375 inch and 2.875 inch.
 
-x_IPR = Q_IPR
-y_IPR = Pwf_IPR
+Q_TPR= np.arange(1000,6500,500)
+P_T190=[1334,1400,1487,1592,1712,1843,1984,2132,2287,2446,2689]
+P_T2375=[1298,1320,1351,1390,1435,1487,1545,1609,1677,1749,1824]
+P_T2875=[1286,1294,1305,1319,1336,1356,1378,1403,1431,1461,1493]
 
-plt.figure(figsize=(10, 6))
+# Organizing the TPR data into a DataFrame for comparison.
 
-plt.plot(
-    x_IPR,
-    y_IPR,
-    linewidth=2.5,
-    label='IPR'
-)
+DF_TPR= pd.DataFrame({'Q':Q_TPR, 'P190':P_T190, 'P2375':P_T2375, 'P2875':P_T2875})
 
-plt.xlabel('Production Rate (bbl/d)')
-plt.ylabel('Flowing Bottom-Hole Pressure (psi)')
-plt.title('Inflow Performance Relationship (IPR)')
-plt.grid(True)
-plt.legend()
-plt.show()
+DF_TPR
 
+# Production-rate data used for plotting the TPR curves.
 
-# ------------------------------------------------------------
-# 3. TPR DATASET
-# ------------------------------------------------------------
-# Source: PetroWiki
+x_TPR= Q_TPR
 
-Q_TPR = np.arange(1000, 6500, 500)
+# Combining the IPR and TPR curves to perform nodal analysis.
+# The curves are compared for different tubing sizes.
 
-P_T190 = [
-    1334, 1400, 1487, 1592, 1712,
-    1843, 1984, 2132, 2287, 2446, 2689
-]
+plt.plot(Q_IPR,Pwf_IPR,label='IPR',linewidth='2.5')
+plt.plot(Q_TPR,P_T190,label='TPR at 1.90in tubing',linewidth='2.5')
+plt.plot(Q_TPR,P_T2375,label='TPR at 2.375in tubing',linewidth='2.5')
+plt.plot(Q_TPR,P_T2875,label='TPR at 2.875in tubing',linewidth='2.5')
 
-P_T2375 = [
-    1298, 1320, 1351, 1390, 1435,
-    1487, 1545, 1609, 1677, 1749, 1824
-]
+# Adding labels, title and legend to the final nodal analysis plot.
 
-P_T2875 = [
-    1286, 1294, 1305, 1319, 1336,
-    1356, 1378, 1403, 1431, 1461, 1493
-]
-
-DF_TPR = pd.DataFrame({
-    'Flow Rate': Q_TPR,
-    'TPR - 1.90 in': P_T190,
-    'TPR - 2.375 in': P_T2375,
-    'TPR - 2.875 in': P_T2875
-})
-
-print("\nTPR Dataset:")
-print(DF_TPR)
-
-
-# ------------------------------------------------------------
-# 4. NODAL ANALYSIS
-# ------------------------------------------------------------
-
-plt.figure(figsize=(10, 6))
-
-# IPR curve
-plt.plot(
-    Q_IPR,
-    Pwf_IPR,
-    label='IPR',
-    linewidth=2.5
-)
-
-# TPR curves for different tubing sizes
-plt.plot(
-    Q_TPR,
-    P_T190,
-    label='TPR at 1.90 in tubing',
-    linewidth=2.5
-)
-
-plt.plot(
-    Q_TPR,
-    P_T2375,
-    label='TPR at 2.375 in tubing',
-    linewidth=2.5
-)
-
-plt.plot(
-    Q_TPR,
-    P_T2875,
-    label='TPR at 2.875 in tubing',
-    linewidth=2.5
-)
-
-plt.xlabel('Production Rate')
-plt.ylabel('Flowing Bottom-Hole Pressure (psi)')
+plt.xlabel('Q(MMscf/d)')
+plt.ylabel('Flowing BHP(psi)')
 plt.title('Nodal Analysis')
-
 plt.legend(loc='best')
-plt.grid(True)
-
-plt.show()
+plt.style.use('classic')
